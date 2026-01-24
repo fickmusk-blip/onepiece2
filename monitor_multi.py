@@ -22,11 +22,8 @@ SHOPS = [
     "playingcardshop.eu",
     "bazaarofmagic.eu",
     "totalcards.net",
-    "tcgmarket.eu",
     "tcgshop.eu",
-    "tcgcollectibles.eu",
     "tcgcorner.eu",
-    "tcgzone.eu",
     "GameRoom.lt",
     "Padis-Store.com",
     "Yonko-TCG.de",
@@ -105,4 +102,5 @@ while True:
         json.dump(seen_state, f)
 
     time.sleep(CHECK_EVERY)
+
 
