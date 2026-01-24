@@ -18,7 +18,22 @@ SHOPS = [
     "tcgshop.eu",
     "games-island.eu",
     "poke-power.eu",
-    "zadoys.at"
+    "zadoys.at",
+    "playingcardshop.eu",
+    "bazaarofmagic.eu",
+    "totalcards.net",
+    "tcgmarket.eu",
+    "tcgshop.eu",
+    "tcgcollectibles.eu",
+    "tcgcorner.eu",
+    "tcgzone.eu",
+    "GameRoom.lt",
+    "Padis-Store.com",
+    "Yonko-TCG.de",
+    "EuropeTCG.com",
+    "BESCards.com",
+    "Games-Island.eu",
+    "TCGshop.eu"
 ]
 
 CHECK_EVERY = 180  # seconds (3 minutes)
@@ -90,3 +105,4 @@ while True:
         json.dump(seen_state, f)
 
     time.sleep(CHECK_EVERY)
+
