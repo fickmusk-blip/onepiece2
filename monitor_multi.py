@@ -33,7 +33,7 @@ SHOPS = [
     "TCGshop.eu"
 ]
 
-CHECK_EVERY = 180  # seconds (3 minutes)
+CHECK_EVERY = 60  # seconds (1 minutes)
 
 # Load persistent state
 if os.path.exists("seen_multi.json"):
@@ -102,5 +102,6 @@ while True:
         json.dump(seen_state, f)
 
     time.sleep(CHECK_EVERY)
+
 
 
