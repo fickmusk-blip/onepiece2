@@ -35,12 +35,8 @@ SHOPS = [
     "EvolutionTCG.com",
     "Spieltraum-shop.de",
     "Play-In.com",
-    "Ludiworld.fr",
     "FantasyWelt.de",
     "Spielwaren-Kontor24.de",
-    "CardGame-Club.de",
-    "KrazyCollectors.com",
-    "TCGRepublic.eu",
     "OtakuWorld.de",
     "Spielzeugwelten.de",
     "Pokecardsstore.it",
@@ -117,6 +113,7 @@ while True:
         json.dump(seen_state, f)
 
     time.sleep(CHECK_EVERY)
+
 
 
 
