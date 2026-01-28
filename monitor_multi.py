@@ -47,7 +47,7 @@ SHOPS = [
     "tf-robots.nl/de_DE/c-7151954/one-piece-dragon-ball-pokemon-lorcana-and-other-tcg/?filter=W3sibGVmdE9wZXJhbmQiOnsidHlwZSI6IkZJTFRFUiIsInZhbHVlIjoiMGFjY2VjOGEtZmFhNy00OGNiLTgwMTYtM2VhNzk5N2JkOThjIn0sIm9wZXJhdG9yIjoiSU4iLCJyaWdodE9wZXJhbmQiOnsidHlwZSI6IlNDQUxBUiIsInZhbHVlcyI6WyIyMTk1NjAiXX19XQ%3D%3D",
     "poke-power.eu/en/collections/one-piece-card-game",
     "www.tcgshop.eu/onepiece",
-    "https://zadoys.at/collections/preorder-one-piece?srsltid=AfmBOoovufr4UtE4LR857TD9mYfk7uIFOAfq5pAzgrqJrUpb-XSprYp-&shpxid=79504ceb-afeb-40a7-932d-d78ce3169606"
+    "zadoys.at/collections/preorder-one-piece?srsltid=AfmBOoovufr4UtE4LR857TD9mYfk7uIFOAfq5pAzgrqJrUpb-XSprYp-&shpxid=79504ceb-afeb-40a7-932d-d78ce3169606"
 ]
 
 CHECK_EVERY = 60  # seconds (1 minutes)
@@ -119,6 +119,7 @@ while True:
         json.dump(seen_state, f)
 
     time.sleep(CHECK_EVERY)
+
 
 
 
