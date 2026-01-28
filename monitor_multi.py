@@ -39,7 +39,12 @@ SHOPS = [
     "Spielzeugwelten.de",
     "Pokecardsstore.it",
     "CrispyCards.de",
-    "tcgshop-moers.eu"
+    "tcgshop-moers.eu",
+    "https://oupi.eu/en/413-pre-order-one-piece",
+    "https://4xtrading.eu/brand/one-piece",
+    "https://threestonesgames.com/collections/one-piece-tcg",
+    "https://infiniterealmtcg.com/collections/pre-order",
+    "https://www.tf-robots.nl/de_DE/c-7151954/one-piece-dragon-ball-pokemon-lorcana-and-other-tcg/?filter=W3sibGVmdE9wZXJhbmQiOnsidHlwZSI6IkZJTFRFUiIsInZhbHVlIjoiMGFjY2VjOGEtZmFhNy00OGNiLTgwMTYtM2VhNzk5N2JkOThjIn0sIm9wZXJhdG9yIjoiSU4iLCJyaWdodE9wZXJhbmQiOnsidHlwZSI6IlNDQUxBUiIsInZhbHVlcyI6WyIyMTk1NjAiXX19XQ%3D%3D"
 ]
 
 CHECK_EVERY = 60  # seconds (1 minutes)
@@ -111,6 +116,7 @@ while True:
         json.dump(seen_state, f)
 
     time.sleep(CHECK_EVERY)
+
 
 
 
