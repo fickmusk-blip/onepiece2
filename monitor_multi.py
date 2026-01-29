@@ -13,6 +13,7 @@ SHOPS = [
     "threestonesgames.com",
     "oupi.eu",
     "4xtrading.eu",
+    "https://oupi.eu/en/new-products",
     "infiniterealmtcg.com",
     "www.tf-robots.nl",
     "tcgshop.eu",
@@ -119,6 +120,7 @@ while True:
         json.dump(seen_state, f)
 
     time.sleep(CHECK_EVERY)
+
 
 
 
