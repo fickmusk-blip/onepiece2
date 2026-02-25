@@ -14,37 +14,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 CHECK_INTERVAL = 60  # seconds
 
 URLS = [
-    "https://threestonesgames.com",
-    "https://oupi.eu",
-    "https://4xtrading.eu",
     "https://oupi.eu/en/new-products",
-    "https://infiniterealmtcg.com",
-    "https://www.tf-robots.nl",
-    "https://tcgshop.eu",
-    "https://games-island.eu",
-    "https://poke-power.eu",
-    "https://zadoys.at",
-    "https://playingcardshop.eu",
-    "https://bazaarofmagic.eu",
-    "https://totalcards.net",
-    "https://tcgcorner.eu",
-    "https://GameRoom.lt",
-    "https://Padis-Store.com",
-    "https://Yonko-TCG.de",
-    "https://EuropeTCG.com",
-    "https://BESCards.com",
-    "https://Games-Island.eu",
-    "https://FantasiaCards.de",
-    "https://EvolutionTCG.com",
-    "https://Spieltraum-shop.de",
-    "https://Play-In.com",
-    "https://FantasyWelt.de",
-    "https://Spielwaren-Kontor24.de",
-    "https://OtakuWorld.de",
-    "https://Spielzeugwelten.de",
-    "https://Pokecardsstore.it",
-    "https://CrispyCards.de",
-    "https://tcgshop-moers.eu",
     "https://oupi.eu/en/413-pre-order-one-piece",
     "https://4xtrading.eu/brand/one-piece",
     "https://threestonesgames.com/collections/one-piece-tcg",
@@ -54,80 +24,153 @@ URLS = [
     "https://zadoys.at/collections/preorder-one-piece"
 ]
 
-KEYWORDS = ["one piece", "pre-order", "preorder"]
+KEYWORDS = ["one piece"]
+BLOCK_WORDS = ["sold out", "out of stock"]
 
+SEEN_FILE = "seen_multi.json"
+
+
+# ---------------- TELEGRAM ---------------- #
 
 def send_telegram_message(message):
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        print("❌ Telegram credentials missing.")
+        return
+
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
         "text": message,
         "parse_mode": "HTML",
         "disable_web_page_preview": False
     }
+
     try:
-        requests.post(url, data=payload, timeout=10)
+        r = requests.post(url, data=payload, timeout=15)
+        print("Telegram response:", r.text)
     except Exception as e:
         print("Telegram error:", e)
 
 
+# ---------------- STORAGE ---------------- #
+
 def load_seen():
     try:
-        with open("seen_multi.json", "r") as f:
+        with open(SEEN_FILE, "r") as f:
             return set(json.load(f))
     except:
         return set()
 
 
 def save_seen(seen):
-    with open("seen_multi.json", "w") as f:
+    with open(SEEN_FILE, "w") as f:
         json.dump(list(seen), f)
 
 
+# ---------------- FILTERS ---------------- #
+
 def contains_keywords(text):
     text = text.lower()
-    return any(keyword in text for keyword in KEYWORDS)
+    if not any(keyword in text for keyword in KEYWORDS):
+        return False
+    if any(block in text for block in BLOCK_WORDS):
+        return False
+    return True
 
 
-def scan_site(url, seen):
-    print(f"Scanning: {url}")
+def looks_like_product_link(href):
+    if not href:
+        return False
+
+    # Ignore anchors, javascript, mail links
+    if href.startswith("#") or "javascript:" in href or "mailto:" in href:
+        return False
+
+    # Must contain product-like structure
+    product_indicators = ["/product", "/products", "/item", "/collections"]
+    return any(indicator in href.lower() for indicator in product_indicators)
+
+
+# ---------------- SCRAPER ---------------- #
+
+def scan_site(url, seen, first_run=False):
+    print(f"🔍 Scanning: {url}")
+
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
-        response = requests.get(url, headers=headers, timeout=20)
-        soup = BeautifulSoup(response.text, "lxml")
+        response = requests.get(url, headers=headers, timeout=25)
 
+        if response.status_code != 200:
+            print("⚠️ Status:", response.status_code)
+            return
+
+        soup = BeautifulSoup(response.text, "lxml")
         links = soup.find_all("a", href=True)
 
         for link in links:
             title = link.get_text(strip=True)
             href = link["href"]
 
-            if not title:
+            if not title or len(title) < 4:
                 continue
 
-            if contains_keywords(title):
-                full_url = urljoin(url, href)
+            if not contains_keywords(title):
+                continue
 
-                if full_url not in seen:
-                    print("NEW PRODUCT:", title)
-                    message = f"🔥 <b>New One Piece Product Found!</b>\n\n<b>{title}</b>\n{full_url}"
-                    send_telegram_message(message)
-                    seen.add(full_url)
+            if not looks_like_product_link(href):
+                continue
+
+            full_url = urljoin(url, href)
+
+            if full_url in seen:
+                continue
+
+            # First run = store only, don't alert
+            if first_run:
+                seen.add(full_url)
+                continue
+
+            print("✅ NEW PRODUCT:", title)
+
+            message = (
+                f"🔥 <b>New One Piece Product Found!</b>\n\n"
+                f"<b>{title}</b>\n"
+                f"{full_url}"
+            )
+
+            send_telegram_message(message)
+            seen.add(full_url)
 
     except Exception as e:
-        print(f"Error scanning {url}: {e}")
+        print(f"❌ Error scanning {url}:", e)
 
+
+# ---------------- MAIN LOOP ---------------- #
 
 def main():
+    print("🚀 Bot starting...")
+
     seen = load_seen()
-    print("Bot started...")
+
+    # FIRST RUN PROTECTION
+    if not seen:
+        print("⚠️ First run detected — storing existing products silently...")
+        for url in URLS:
+            scan_site(url, seen, first_run=True)
+
+        save_seen(seen)
+        print("✅ Initial product list stored. Bot is now live.")
+    
+    # Test Telegram once at startup
+    send_telegram_message("🤖 One Piece Monitor Bot is now running!")
 
     while True:
         for url in URLS:
             scan_site(url, seen)
 
         save_seen(seen)
-        print(f"Sleeping {CHECK_INTERVAL} seconds...\n")
+        print(f"⏳ Sleeping {CHECK_INTERVAL} seconds...\n")
         time.sleep(CHECK_INTERVAL)
 
 
