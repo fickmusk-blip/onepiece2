@@ -2,133 +2,134 @@ import requests
 import time
 import json
 import os
-import hashlib
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+from dotenv import load_dotenv
 
-# === CONFIG ===
-TOKEN = "7661547464:AAHCLqjOTDlgPRqSFIvL84r613XALAwE_1A"
-CHAT_ID = "429753902"
+load_dotenv()
 
-# Shops to monitor
-SHOPS = [
-    "threestonesgames.com",
-    "oupi.eu",
-    "4xtrading.eu",
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+CHECK_INTERVAL = 60  # seconds
+
+URLS = [
+    "https://threestonesgames.com",
+    "https://oupi.eu",
+    "https://4xtrading.eu",
     "https://oupi.eu/en/new-products",
-    "infiniterealmtcg.com",
-    "www.tf-robots.nl",
-    "tcgshop.eu",
-    "games-island.eu",
-    "poke-power.eu",
-    "zadoys.at",
-    "playingcardshop.eu",
-    "bazaarofmagic.eu",
-    "totalcards.net",
-    "tcgcorner.eu",
-    "GameRoom.lt",
-    "Padis-Store.com",
-    "Yonko-TCG.de",
-    "EuropeTCG.com",
-    "BESCards.com",
-    "Games-Island.eu",
-    "FantasiaCards.de",
-    "EvolutionTCG.com",
-    "Spieltraum-shop.de",
-    "Play-In.com",
-    "FantasyWelt.de",
-    "Spielwaren-Kontor24.de",
-    "OtakuWorld.de",
-    "Spielzeugwelten.de",
-    "Pokecardsstore.it",
-    "CrispyCards.de",
-    "tcgshop-moers.eu",
-    "oupi.eu/en/413-pre-order-one-piece",
-    "4xtrading.eu/brand/one-piece",
-    "threestonesgames.com/collections/one-piece-tcg",
-    "infiniterealmtcg.com/collections/pre-order",
-    "tf-robots.nl/de_DE/c-7151954/one-piece-dragon-ball-pokemon-lorcana-and-other-tcg/?filter=W3sibGVmdE9wZXJhbmQiOnsidHlwZSI6IkZJTFRFUiIsInZhbHVlIjoiMGFjY2VjOGEtZmFhNy00OGNiLTgwMTYtM2VhNzk5N2JkOThjIn0sIm9wZXJhdG9yIjoiSU4iLCJyaWdodE9wZXJhbmQiOnsidHlwZSI6IlNDQUxBUiIsInZhbHVlcyI6WyIyMTk1NjAiXX19XQ%3D%3D",
-    "poke-power.eu/en/collections/one-piece-card-game",
-    "www.tcgshop.eu/onepiece",
-    "zadoys.at/collections/preorder-one-piece?srsltid=AfmBOoovufr4UtE4LR857TD9mYfk7uIFOAfq5pAzgrqJrUpb-XSprYp-&shpxid=79504ceb-afeb-40a7-932d-d78ce3169606"
+    "https://infiniterealmtcg.com",
+    "https://www.tf-robots.nl",
+    "https://tcgshop.eu",
+    "https://games-island.eu",
+    "https://poke-power.eu",
+    "https://zadoys.at",
+    "https://playingcardshop.eu",
+    "https://bazaarofmagic.eu",
+    "https://totalcards.net",
+    "https://tcgcorner.eu",
+    "https://GameRoom.lt",
+    "https://Padis-Store.com",
+    "https://Yonko-TCG.de",
+    "https://EuropeTCG.com",
+    "https://BESCards.com",
+    "https://Games-Island.eu",
+    "https://FantasiaCards.de",
+    "https://EvolutionTCG.com",
+    "https://Spieltraum-shop.de",
+    "https://Play-In.com",
+    "https://FantasyWelt.de",
+    "https://Spielwaren-Kontor24.de",
+    "https://OtakuWorld.de",
+    "https://Spielzeugwelten.de",
+    "https://Pokecardsstore.it",
+    "https://CrispyCards.de",
+    "https://tcgshop-moers.eu",
+    "https://oupi.eu/en/413-pre-order-one-piece",
+    "https://4xtrading.eu/brand/one-piece",
+    "https://threestonesgames.com/collections/one-piece-tcg",
+    "https://infiniterealmtcg.com/collections/pre-order",
+    "https://poke-power.eu/en/collections/one-piece-card-game",
+    "https://tcgshop.eu/onepiece",
+    "https://zadoys.at/collections/preorder-one-piece"
 ]
 
-CHECK_EVERY = 60  # seconds (1 minutes)
+KEYWORDS = ["one piece", "pre-order", "preorder"]
 
-# Load persistent state
-if os.path.exists("seen_multi.json"):
-    with open("seen_multi.json", "r") as f:
-        seen_state = json.load(f)
-else:
-    seen_state = {}
 
-# Initialize state for each shop
-for shop in SHOPS:
-    seen_state.setdefault(shop, {"ids": [], "hash": ""})
+def send_telegram_message(message):
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": False
+    }
+    try:
+        requests.post(url, data=payload, timeout=10)
+    except Exception as e:
+        print("Telegram error:", e)
 
-def notify(msg):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    requests.post(url, json={
-        "chat_id": CHAT_ID,
-        "text": msg,
-        "disable_web_page_preview": True
-    })
 
-def hash_content(text):
-    return hashlib.md5(text.encode()).hexdigest()
+def load_seen():
+    try:
+        with open("seen_multi.json", "r") as f:
+            return set(json.load(f))
+    except:
+        return set()
 
-notify("📡 Multi-shop TCG monitor started")
 
-print("Monitor running...")
-
-while True:
-    for shop in SHOPS:
-        base = f"https://{shop}"
-        json_url = base + "/products.json"
-
-        try:
-            # Try Shopify JSON API first
-            r = requests.get(json_url, timeout=10)
-            data = r.json()
-
-            if "products" in data:
-                current_ids = [p["id"] for p in data["products"]]
-                new_items = [p for p in data["products"] if p["id"] not in seen_state[shop]["ids"]]
-
-                for p in new_items:
-                    title = p.get("title", "")
-                    handle = p.get("handle", "")
-                    # Filter for One Piece only
-                    if "one piece" in title.lower():
-                        notify(f"🛒 {shop} NEW: {title}\n{base}/products/{handle}")
-
-                seen_state[shop]["ids"] = current_ids
-            else:
-                raise ValueError("No products key")
-
-        except Exception:
-            # Fallback: HTML hash detection
-            try:
-                html = requests.get(base, timeout=10).text
-                current_hash = hash_content(html)
-                if seen_state[shop]["hash"] and current_hash != seen_state[shop]["hash"]:
-                    notify(f"🆕 CHANGE DETECTED on {shop}")
-                seen_state[shop]["hash"] = current_hash
-            except Exception as e:
-                print(f"Error fetching {shop}: {e}")
-
-    # Save state to disk
+def save_seen(seen):
     with open("seen_multi.json", "w") as f:
-        json.dump(seen_state, f)
-
-    time.sleep(CHECK_EVERY)
+        json.dump(list(seen), f)
 
 
+def contains_keywords(text):
+    text = text.lower()
+    return any(keyword in text for keyword in KEYWORDS)
 
 
+def scan_site(url, seen):
+    print(f"Scanning: {url}")
+    try:
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(url, headers=headers, timeout=20)
+        soup = BeautifulSoup(response.text, "lxml")
+
+        links = soup.find_all("a", href=True)
+
+        for link in links:
+            title = link.get_text(strip=True)
+            href = link["href"]
+
+            if not title:
+                continue
+
+            if contains_keywords(title):
+                full_url = urljoin(url, href)
+
+                if full_url not in seen:
+                    print("NEW PRODUCT:", title)
+                    message = f"🔥 <b>New One Piece Product Found!</b>\n\n<b>{title}</b>\n{full_url}"
+                    send_telegram_message(message)
+                    seen.add(full_url)
+
+    except Exception as e:
+        print(f"Error scanning {url}: {e}")
 
 
+def main():
+    seen = load_seen()
+    print("Bot started...")
+
+    while True:
+        for url in URLS:
+            scan_site(url, seen)
+
+        save_seen(seen)
+        print(f"Sleeping {CHECK_INTERVAL} seconds...\n")
+        time.sleep(CHECK_INTERVAL)
 
 
-
-
-
-
+if __name__ == "__main__":
+    main()
