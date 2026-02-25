@@ -4,14 +4,26 @@ import json
 import os
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from dotenv import load_dotenv
 
-load_dotenv()
+# ================================
+# 🔑 PUT YOUR TELEGRAM DATA HERE
+# ================================
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+HARDCODED_BOT_TOKEN = "7661547464:AAHCLqjOTDlgPRqSFIvL84r613XALAwE_1A"
+HARDCODED_CHAT_ID = "1504540900"
 
-CHECK_INTERVAL = 60  # seconds
+# ================================
+
+# Railway variables (if they exist)
+ENV_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+ENV_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+# Use Railway variable if available, otherwise fallback to hardcoded
+TELEGRAM_BOT_TOKEN = ENV_BOT_TOKEN if ENV_BOT_TOKEN else HARDCODED_BOT_TOKEN
+TELEGRAM_CHAT_ID = ENV_CHAT_ID if ENV_CHAT_ID else HARDCODED_CHAT_ID
+
+CHECK_INTERVAL = 60
+SEEN_FILE = "seen_multi.json"
 
 URLS = [
     "https://oupi.eu/en/new-products",
@@ -27,23 +39,23 @@ URLS = [
 KEYWORDS = ["one piece"]
 BLOCK_WORDS = ["sold out", "out of stock"]
 
-SEEN_FILE = "seen_multi.json"
-
 
 # ---------------- TELEGRAM ---------------- #
 
 def send_telegram_message(message):
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        print("❌ Telegram credentials missing.")
+        print("❌ Telegram still missing.")
         return
+
+    print("Using BOT TOKEN:", TELEGRAM_BOT_TOKEN[:10], "...")
+    print("Using CHAT ID:", TELEGRAM_CHAT_ID)
 
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
 
     payload = {
         "chat_id": TELEGRAM_CHAT_ID,
         "text": message,
-        "parse_mode": "HTML",
-        "disable_web_page_preview": False
+        "parse_mode": "HTML"
     }
 
     try:
@@ -68,7 +80,7 @@ def save_seen(seen):
         json.dump(list(seen), f)
 
 
-# ---------------- FILTERS ---------------- #
+# ---------------- FILTER ---------------- #
 
 def contains_keywords(text):
     text = text.lower()
@@ -82,14 +94,9 @@ def contains_keywords(text):
 def looks_like_product_link(href):
     if not href:
         return False
-
-    # Ignore anchors, javascript, mail links
-    if href.startswith("#") or "javascript:" in href or "mailto:" in href:
+    if href.startswith("#") or "javascript:" in href:
         return False
-
-    # Must contain product-like structure
-    product_indicators = ["/product", "/products", "/item", "/collections"]
-    return any(indicator in href.lower() for indicator in product_indicators)
+    return "/product" in href.lower() or "/products" in href.lower()
 
 
 # ---------------- SCRAPER ---------------- #
@@ -102,7 +109,7 @@ def scan_site(url, seen, first_run=False):
         response = requests.get(url, headers=headers, timeout=25)
 
         if response.status_code != 200:
-            print("⚠️ Status:", response.status_code)
+            print("Status:", response.status_code)
             return
 
         soup = BeautifulSoup(response.text, "lxml")
@@ -126,7 +133,6 @@ def scan_site(url, seen, first_run=False):
             if full_url in seen:
                 continue
 
-            # First run = store only, don't alert
             if first_run:
                 seen.add(full_url)
                 continue
@@ -135,34 +141,32 @@ def scan_site(url, seen, first_run=False):
 
             message = (
                 f"🔥 <b>New One Piece Product Found!</b>\n\n"
-                f"<b>{title}</b>\n"
-                f"{full_url}"
+                f"<b>{title}</b>\n{full_url}"
             )
 
             send_telegram_message(message)
             seen.add(full_url)
 
     except Exception as e:
-        print(f"❌ Error scanning {url}:", e)
+        print("Error:", e)
 
 
-# ---------------- MAIN LOOP ---------------- #
+# ---------------- MAIN ---------------- #
 
 def main():
     print("🚀 Bot starting...")
+    print("ENV BOT:", ENV_BOT_TOKEN)
+    print("ENV CHAT:", ENV_CHAT_ID)
 
     seen = load_seen()
 
-    # FIRST RUN PROTECTION
     if not seen:
-        print("⚠️ First run detected — storing existing products silently...")
+        print("⚠️ First run — storing products silently...")
         for url in URLS:
             scan_site(url, seen, first_run=True)
-
         save_seen(seen)
-        print("✅ Initial product list stored. Bot is now live.")
-    
-    # Test Telegram once at startup
+        print("✅ Initial store complete.")
+
     send_telegram_message("🤖 One Piece Monitor Bot is now running!")
 
     while True:
@@ -170,7 +174,7 @@ def main():
             scan_site(url, seen)
 
         save_seen(seen)
-        print(f"⏳ Sleeping {CHECK_INTERVAL} seconds...\n")
+        print("⏳ Sleeping 60 seconds...\n")
         time.sleep(CHECK_INTERVAL)
 
 
