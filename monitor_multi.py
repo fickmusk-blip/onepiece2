@@ -9,7 +9,7 @@ from urllib.parse import urljoin
 # 🔑 PUT YOUR TELEGRAM DATA HERE
 # ================================
 
-HARDCODED_BOT_TOKEN = "7661547464:AAHCLqjOTDlgPRqSFIvL84r613XALAwE_1A"
+HARDCODED_BOT_TOKEN = "8668770872:AAGU38d0xGm11lJzSsqD7dR1X_eprX86f7g"
 HARDCODED_CHAT_ID = "1504540900"
 
 # ================================
@@ -180,3 +180,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
