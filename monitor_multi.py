@@ -48,28 +48,28 @@ URLS = [
     "https://www.ilnuovomondoshop.it/en/trading-cards/one-piece-tcg"
     "https://senpaimangashop.com/en/collections/one-piece-card-game-eng"
     "https://fantasiastore.it/it/550-one-piece-card-game"
-    "https://www.primegame.it/"
+    "https://www.primegame.it"
     "https://www.inksouls.it/product-category/tcg-one-piece"
     "https://www.gametrade.it/Category/One_Piece"
     "https://www.monodejuegos.shop/categoria-producto/trading-cards/one-piece-trading-card-game"
     "https://www.padis-store.com/en"
     "https://masterofgames.es/en/67-one-piece"
     "https://www.colossalstore.es/en/product-category/tcg/one-piece"
-    "https://templarsarena.com/"
-    "https://bigcards.eu/"
+    "https://templarsarena.com"
+    "https://bigcards.eu"
     "https://baroncollections.fr/en/collections/one-piece-tcg-francais"
     "https://www.poke-geek.fr/en/collections/one-piece"
     "https://tcgmikaeru.com/collections/one-piece-fr"
-    ""https://www.opecards.fr/"
+    ""https://www.opecards.fr"
     "https://ludotrotter.fr/categorie-produit/magasin/cartes/one-piece"
     "https://maxireves.fr/selection-jeux/jeux-de-cartes-tcg/one-piece-tcg"
     "https://www.cardshunter.fr/categorie-produit/autres-tcg/one-piece/one-piece-tcg-scelle"
-    "https://worldoftcg.fr/"
-    "https://www.lerepairedudragon.fr/"
+    "https://worldoftcg.fr"
+    "https://www.lerepairedudragon.fr"
     "https://www.destocktcg.fr/jeux-de-cartes-a-collectionner/one-piece-card-game"
     "https://reperegeek.fr/jeux-de-cartes/6342-one-piece-tcg-premium-card-collection-bandai-card-games-fest-23-24-edition.html"
-    "https://www.ultrajeux.fr/"
-    "https://co-lector.fr/"
+    "https://www.ultrajeux.fr"
+    "https://co-lector.fr"
 ]
 
 KEYWORDS = ["one piece"]
@@ -216,5 +216,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
