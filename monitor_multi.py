@@ -34,6 +34,42 @@ URLS = [
     "https://poke-power.eu/en/collections/one-piece-card-game",
     "https://tcgshop.eu/onepiece",
     "https://zadoys.at/collections/preorder-one-piece"
+    "https://www.playingcardshop.eu/one-piece.html"
+    "https://fantasiacards.de/en/collections/one-piece"
+    "https://cardcosmos.de/en-eu/collections/one-piece-karten-kaufen"
+    "https://www.escamon.de/collections/one-piece"
+    "https://yonko-tcg.de/collections/one-piece"
+    "https://games-island.eu/en/c/Card-Games/One-Piece-TCG"
+    "https://carteonepiece.com/en/pages/articles-en-precommandes"
+    "https://www.vendiloshop.it/en/10887-one-piece-tcg"
+    "https://pokecardsstore.it/en/collections/one-piece"
+    "https://otakura.com/en/collections/one-piece-card-game"
+    "https://teamrocketitalia.com/collections/one-piece"
+    "https://www.ilnuovomondoshop.it/en/trading-cards/one-piece-tcg"
+    "https://senpaimangashop.com/en/collections/one-piece-card-game-eng"
+    "https://fantasiastore.it/it/550-one-piece-card-game"
+    "https://www.primegame.it/"
+    "https://www.inksouls.it/product-category/tcg-one-piece"
+    "https://www.gametrade.it/Category/One_Piece"
+    "https://www.monodejuegos.shop/categoria-producto/trading-cards/one-piece-trading-card-game"
+    "https://www.padis-store.com/en"
+    "https://masterofgames.es/en/67-one-piece"
+    "https://www.colossalstore.es/en/product-category/tcg/one-piece"
+    "https://templarsarena.com/"
+    "https://bigcards.eu/"
+    "https://baroncollections.fr/en/collections/one-piece-tcg-francais"
+    "https://www.poke-geek.fr/en/collections/one-piece"
+    "https://tcgmikaeru.com/collections/one-piece-fr"
+    ""https://www.opecards.fr/"
+    "https://ludotrotter.fr/categorie-produit/magasin/cartes/one-piece"
+    "https://maxireves.fr/selection-jeux/jeux-de-cartes-tcg/one-piece-tcg"
+    "https://www.cardshunter.fr/categorie-produit/autres-tcg/one-piece/one-piece-tcg-scelle"
+    "https://worldoftcg.fr/"
+    "https://www.lerepairedudragon.fr/"
+    "https://www.destocktcg.fr/jeux-de-cartes-a-collectionner/one-piece-card-game"
+    "https://reperegeek.fr/jeux-de-cartes/6342-one-piece-tcg-premium-card-collection-bandai-card-games-fest-23-24-edition.html"
+    "https://www.ultrajeux.fr/"
+    "https://co-lector.fr/"
 ]
 
 KEYWORDS = ["one piece"]
@@ -180,4 +216,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
