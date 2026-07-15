@@ -17,6 +17,7 @@ CHECK_INTERVAL = 60
 SEEN_FILE = "seen_multi.json"
 
 URLS = [
+    # Original URLs
     "https://oupi.eu/en/new-products",
     "https://oupi.eu/en/413-pre-order-one-piece",
     "https://4xtrading.eu/brand/one-piece",
@@ -104,7 +105,25 @@ URLS = [
     "https://www.spellenwinkel.nl/en-WW/c/one-piece-tcg/1000538",
     "https://cardstore.nl/en/collections/one-piece",
     "https://www.tcgcenter.nl/en/67-one-piece-tcg",
-    "https://www.coolcard.se/en/category/one-piece-card-game-2"
+    "https://www.coolcard.se/en/category/one-piece-card-game-2",
+
+    # NEW URLs YOU REQUESTED
+    "https://cardzone.es",
+    "https://metamorphcenter.com",
+    "https://collectorage.com",
+    "https://arcotcg.com",
+    "https://onepiecetcg.eu",
+    "https://cardinvestor.de",
+    "https://tcgparadise.de",
+    "https://evolutiontcg.nl",
+    "https://tcgshopeu.com",
+    "https://magicomens.com",
+    "https://pokecardstore.ch",
+    "https://guildmage.pl",
+    "https://tcgallblue.com",
+    "https://manofgames.de/one-piece",
+    "https://manofgames.de/en/one-piece",
+    "https://tcgallblue.com/preorders"
 ]
 
 KEYWORDS = ["one piece"]
